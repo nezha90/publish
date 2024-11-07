@@ -145,7 +145,7 @@ func main() {
 	}
 
 	// 检查重复项
-	duplicateResults, err := checkDuplicates(records, db)
+	duplicateResults, err := checkDuplicates(records, db, minerID, ldn)
 	if err != nil {
 		log.Fatalf("Error checking duplicates: %v", err)
 	}
