@@ -155,9 +155,7 @@ func main() {
 		if category == "正常状态" {
 			fmt.Printf("num: %d\n", len(pubRecords))
 		}
-		for _, pubRecord := range pubRecords {
-			fmt.Printf("PieceCIDs:\n %s", pubRecord)
-		}
+		fmt.Printf("PieceCID:\n %s", pubRecords)
 	}
 	fmt.Println()
 
