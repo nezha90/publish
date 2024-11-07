@@ -28,7 +28,7 @@ type PublishRecord struct {
 
 // 连接数据库
 func connectDB() (*sql.DB, error) {
-	dsn := "user:password@tcp(localhost:3306)/database"
+	dsn := "root:ccyy123456@tcp(localhost:3306)/filecoin"
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
 		return nil, err
@@ -87,7 +87,7 @@ func parseFile(filename string) ([]Record, error) {
 }
 
 // 检查重复项
-func checkDuplicates(records []Record, db *sql.DB) (map[string][]PublishRecord, error) {
+func checkDuplicates(records []Record, db *sql.DB, minerID, ldn string) (map[string][]PublishRecord, error) {
 	duplicateResults := make(map[string][]PublishRecord)
 	for _, record := range records {
 		publishRecords, err := fetchPublishRecords(db, record.PieceCID)
@@ -96,13 +96,13 @@ func checkDuplicates(records []Record, db *sql.DB) (map[string][]PublishRecord, 
 		}
 
 		for _, pubRecord := range publishRecords {
-			key := "Unique"
-			if pubRecord.LDN == record.Size && pubRecord.MinerID == record.CarSize {
-				key = "LDN and MinerID duplicated"
-			} else if pubRecord.LDN == record.Size {
-				key = "LDN duplicated"
-			} else if pubRecord.MinerID == record.CarSize {
-				key = "MinerID duplicated"
+			key := "未重复"
+			if pubRecord.LDN == ldn && pubRecord.MinerID == minerID {
+				key = "LDN and MinerID 重复"
+			} else if pubRecord.LDN == ldn {
+				key = "LDN 重复"
+			} else if pubRecord.MinerID == minerID {
+				key = "MinerID 重复"
 			}
 			duplicateResults[key] = append(duplicateResults[key], pubRecord)
 		}
