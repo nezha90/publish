@@ -152,6 +152,9 @@ func main() {
 	// 输出结果
 	for category, pubRecords := range duplicateResults {
 		fmt.Printf("\n%s:\n", category)
+		if category == "正常状态" {
+			fmt.Printf("num: %d\n", len(pubRecords))
+		}
 		for _, pubRecord := range pubRecords {
 			fmt.Printf("PieceCIDs:\n %s", pubRecord)
 		}
