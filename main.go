@@ -87,8 +87,8 @@ func parseFile(filename string) ([]Record, error) {
 }
 
 // 检查重复项
-func checkDuplicates(records []Record, db *sql.DB, minerID, ldn string) (map[string][]PublishRecord, error) {
-	duplicateResults := make(map[string][]PublishRecord)
+func checkDuplicates(records []Record, db *sql.DB, minerID, ldn string) (map[string][]string, error) {
+	duplicateResults := make(map[string][]string)
 	for _, record := range records {
 		publishRecords, err := fetchPublishRecords(db, record.PieceCID)
 		if err != nil {
@@ -96,15 +96,14 @@ func checkDuplicates(records []Record, db *sql.DB, minerID, ldn string) (map[str
 		}
 
 		for _, pubRecord := range publishRecords {
-			key := "未重复"
+			key := "正常状态"
 			if pubRecord.LDN == ldn && pubRecord.MinerID == minerID {
-				key = "LDN and MinerID 重复"
-			} else if pubRecord.LDN == ldn {
-				key = "LDN 重复"
-			} else if pubRecord.MinerID == minerID {
-				key = "MinerID 重复"
+				key = "这个piece cid 已经发过"
+			} else if pubRecord.LDN != ldn {
+				key = "这个piece cid 被别的 ldn 发布"
 			}
-			duplicateResults[key] = append(duplicateResults[key], pubRecord)
+
+			duplicateResults[key] = append(duplicateResults[key], record.PieceCID)
 		}
 	}
 	return duplicateResults, nil
@@ -154,9 +153,10 @@ func main() {
 	for category, pubRecords := range duplicateResults {
 		fmt.Printf("\n%s:\n", category)
 		for _, pubRecord := range pubRecords {
-			fmt.Printf("PieceCID: %s, LDN: %s, MinerID: %s\n", pubRecord.PieceCID, pubRecord.LDN, pubRecord.MinerID)
+			fmt.Printf("PieceCIDs:\n %s", pubRecord)
 		}
 	}
+	fmt.Println()
 
 	// 等待用户输入
 	fmt.Println("Do you want to save these records to the database? (yes/no)")
