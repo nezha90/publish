@@ -97,10 +97,10 @@ func checkDuplicates(records []Record, db *sql.DB, minerID, ldn string) (map[str
 
 		for _, pubRecord := range publishRecords {
 			key := "正常状态"
-			if pubRecord.LDN == ldn && pubRecord.MinerID == minerID {
-				key = "这个piece cid 已经发过"
-			} else if pubRecord.LDN != ldn {
+			if pubRecord.LDN != ldn {
 				key = "这个piece cid 被别的 ldn 发布"
+			} else if pubRecord.LDN == ldn && pubRecord.MinerID == minerID {
+				key = "这个piece cid 已经被发过"
 			}
 
 			duplicateResults[key] = append(duplicateResults[key], record.PieceCID)
@@ -154,6 +154,7 @@ func main() {
 		fmt.Printf("\n%s:\n", category)
 		if category == "正常状态" {
 			fmt.Printf("num: %d\n", len(pubRecords))
+			continue
 		}
 		fmt.Printf("PieceCID:\n %s", pubRecords)
 	}
